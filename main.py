@@ -81,8 +81,13 @@ async def on_member_remove(member: discord.Member):
     await channel.send(embed=embed)
 
 
+@bot.command(name="ping")
+async def ping(ctx):
+    await ctx.send(f"🏓 Pong! Bot is online. Latency: `{round(bot.latency * 1000)}ms`")
+
+
 @bot.command(name="sync")
-@commands.is_owner()
+@commands.has_permissions(administrator=True)
 async def sync_commands(ctx):
     msg = await ctx.send("⏳ Syncing commands...")
     results = []
@@ -98,6 +103,14 @@ async def sync_commands(ctx):
         except Exception as e:
             results.append(f"❌ {guild.name}: {e}")
     await msg.edit(content="**Sync Results:**\n" + "\n".join(results))
+
+
+@bot.command(name="cogstatus")
+@commands.has_permissions(administrator=True)
+async def cog_status(ctx):
+    loaded = list(bot.cogs.keys())
+    lines = [f"✅ {c}" for c in loaded] if loaded else ["❌ No cogs loaded"]
+    await ctx.send("**Loaded Cogs:**\n" + "\n".join(lines) + f"\n\n**Commands in tree:** {len(bot.tree.get_commands())}")
 
 
 @bot.event
