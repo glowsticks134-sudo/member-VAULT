@@ -29,9 +29,16 @@ async def on_ready():
     )
     try:
         synced = await bot.tree.sync()
-        print(f"   Synced {len(synced)} slash command(s).")
+        print(f"   Global sync: {len(synced)} command(s).")
     except Exception as e:
-        print(f"   Failed to sync commands: {e}")
+        print(f"   Global sync failed: {e}")
+
+    for guild in bot.guilds:
+        try:
+            guild_synced = await bot.tree.sync(guild=guild)
+            print(f"   Guild sync [{guild.name}]: {len(guild_synced)} command(s).")
+        except Exception as e:
+            print(f"   Guild sync failed for {guild.name}: {e}")
 
 
 @bot.event
