@@ -81,6 +81,25 @@ async def on_member_remove(member: discord.Member):
     await channel.send(embed=embed)
 
 
+@bot.command(name="sync")
+@commands.is_owner()
+async def sync_commands(ctx):
+    msg = await ctx.send("⏳ Syncing commands...")
+    results = []
+    try:
+        global_synced = await bot.tree.sync()
+        results.append(f"🌐 Global: {len(global_synced)} command(s)")
+    except Exception as e:
+        results.append(f"🌐 Global failed: {e}")
+    for guild in bot.guilds:
+        try:
+            guild_synced = await bot.tree.sync(guild=guild)
+            results.append(f"✅ {guild.name}: {len(guild_synced)} command(s)")
+        except Exception as e:
+            results.append(f"❌ {guild.name}: {e}")
+    await msg.edit(content="**Sync Results:**\n" + "\n".join(results))
+
+
 @bot.event
 async def on_command_error(ctx, error):
     embed = discord.Embed(
